@@ -227,6 +227,8 @@ function RegisterScreen({ navigation }) {
             </Text>
           </Pressable>
         </View>
+        </>
+        )}
 
         <AppButton
           title="Create Account"
