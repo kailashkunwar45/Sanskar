@@ -51,7 +51,7 @@ function normalizeAuthError(error) {
 async function register(req, res, next) {
   try {
     handleValidation(req);
-    const { name, email, password, role, religionPreference, phone, address, location } = req.body;
+    const { name, email, password, role, religionPreference, phone, address, location, bio, specialization } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -60,7 +60,26 @@ async function register(req, res, next) {
       throw error;
     }
 
-    const user = await User.create({ name, email, password, role, religionPreference, phone, address, location });
+    // Providers must be verified by admin; customers are auto-verified
+    const isProvider = role === "pandit" || role === "lama";
+    const isVerified = !isProvider;
+
+    // Auto-assign religion preference based on role if not explicitly set
+    let finalReligion = religionPreference;
+    if (!finalReligion) {
+      if (role === "pandit") finalReligion = "hindu";
+      else if (role === "lama") finalReligion = "buddhist";
+    }
+
+    const user = await User.create({
+      name, email, password,
+      role: role || "customer",
+      religionPreference: finalReligion,
+      phone, address, location,
+      bio, specialization,
+      isVerified,
+    });
+
     const accessToken = createAccessToken(user);
     const refreshToken = createRefreshToken(user);
     await storeRefreshToken(user, refreshToken);
@@ -69,6 +88,7 @@ async function register(req, res, next) {
       success: true,
       accessToken,
       refreshToken,
+      isPendingVerification: isProvider,
     });
   } catch (error) {
     return next(normalizeAuthError(error));

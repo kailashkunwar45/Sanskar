@@ -12,19 +12,23 @@ import AppCard from "../../components/common/AppCard";
 import { ListSkeleton } from "../../components/common/SkeletonLoader";
 import fonts from "../../theme/fonts";
 import { Ionicons } from "@expo/vector-icons";
-import { fetchBookings } from "../../services/api";
+import { fetchBookings, fetchPendingProviders, verifyProvider } from "../../services/api";
+import AppButton from "../../components/common/AppButton";
 
 function AdminDashboardScreen() {
   const { theme } = useTheme();
   const [bookings, setBookings] = useState([]);
+  const [pendingProviders, setPendingProviders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalBookings: 0, pending: 0, confirmed: 0 });
 
   const loadAllData = useCallback(async () => {
     try {
       const res = await fetchBookings();
+      const provRes = await fetchPendingProviders();
       const data = res.data || res.bookings || [];
       setBookings(data);
+      setPendingProviders(provRes.data || []);
       
       // Calculate simple stats
       setStats({
@@ -42,6 +46,15 @@ function AdminDashboardScreen() {
   useEffect(() => {
     loadAllData();
   }, [loadAllData]);
+
+  const handleVerify = async (id) => {
+    try {
+      await verifyProvider(id);
+      loadAllData(); // Refresh list after verification
+    } catch {
+      // Handle error gracefully
+    }
+  };
 
   if (loading) return <ListSkeleton count={5} />;
 
@@ -62,6 +75,34 @@ function AdminDashboardScreen() {
           <Text style={[styles.statLabel, { color: theme.textMuted }]}>Pending</Text>
         </AppCard>
       </View>
+
+      {/* Pending Providers Section */}
+      {pendingProviders.length > 0 && (
+        <View style={{ marginBottom: 24 }}>
+          <Text style={[styles.sectionTitle, { color: theme.textPrimary }]}>
+            Pending Approvals ({pendingProviders.length})
+          </Text>
+          {pendingProviders.map(provider => (
+            <AppCard key={provider._id} style={[styles.bookingItem, { borderColor: theme.warning }]}>
+              <View style={styles.row}>
+                <Ionicons name="shield-checkmark" size={24} color={theme.warning} />
+                <View style={styles.info}>
+                  <Text style={[styles.userText, { color: theme.textPrimary }]}>{provider.name}</Text>
+                  <Text style={[styles.panditText, { color: theme.textSecondary, textTransform: 'capitalize' }]}>
+                    Role: {provider.role} | Religion: {provider.religionPreference}
+                  </Text>
+                </View>
+                <AppButton 
+                  title="Approve" 
+                  size="sm" 
+                  onPress={() => handleVerify(provider._id)}
+                  style={{ paddingHorizontal: 12, borderRadius: 6 }} 
+                />
+              </View>
+            </AppCard>
+          ))}
+        </View>
+      )}
 
       <Text style={[styles.sectionTitle, { color: theme.textPrimary }]}>Recent Activity</Text>
       {bookings.length === 0 ? (

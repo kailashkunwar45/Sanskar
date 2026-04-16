@@ -81,6 +81,17 @@ export function createBooking(bookingData) {
   return httpRequest("/api/bookings", { method: "POST", body: bookingData });
 }
 
+// ── Providers (Pandits / Lamas) ──
+export function fetchProviders() {
+  return httpRequest("/api/users/providers");
+}
+export function fetchPendingProviders() {
+  return httpRequest("/api/users/pending");
+}
+export function verifyProvider(providerId) {
+  return httpRequest(`/api/users/${providerId}/verify`, { method: "PUT" });
+}
+
 // ── Reviews ──
 export function fetchReviews(productId) {
   return httpRequest(`/api/reviews?productId=${productId}`);

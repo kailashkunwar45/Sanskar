@@ -16,6 +16,7 @@ import { fetchBookings } from "../../services/api";
 
 function PanditDashboardScreen() {
   const { theme } = useTheme();
+  const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 

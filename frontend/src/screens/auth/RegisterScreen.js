@@ -26,6 +26,7 @@ function RegisterScreen({ navigation }) {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [location, setLocation] = useState("");
+  const [role, setRole] = useState("customer");
   const [religion, setReligion] = useState("hindu");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -46,7 +47,8 @@ function RegisterScreen({ navigation }) {
     }
     try {
       setLoading(true);
-      await register(name.trim(), email.trim().toLowerCase(), password, "customer", religion, phone.trim(), address.trim(), location.trim());
+      const userReligion = role === "lama" ? "buddhist" : religion;
+      await register(name.trim(), email.trim().toLowerCase(), password, role, userReligion, phone.trim(), address.trim(), location.trim());
     } catch (e) {
       setError(e.message || "Registration failed");
     } finally {
@@ -131,12 +133,48 @@ function RegisterScreen({ navigation }) {
           placeholder="Your city"
         />
 
-        {/* Religion Preference Toggle */}
-        <Text
-          style={[styles.label, { color: theme.textSecondary }]}
-        >
-          Religion Preference
-        </Text>
+        {/* Role Selection */}
+        <Text style={[styles.label, { color: theme.textSecondary, marginTop: 10 }]}>Account Type</Text>
+        <View style={styles.toggleRow}>
+          {["customer", "pandit", "lama"].map((r) => (
+            <Pressable
+              key={r}
+              style={[
+                styles.toggleBtn,
+                {
+                  backgroundColor: role === r ? theme.primary : theme.surface,
+                  borderColor: role === r ? theme.primary : theme.border,
+                },
+              ]}
+              onPress={() => setRole(r)}
+            >
+              <Text
+                style={{
+                  color: role === r ? theme.textOnPrimary : theme.textSecondary,
+                  fontWeight: fonts.weights.semibold,
+                  fontSize: fonts.sizes.sm,
+                  textTransform: "capitalize",
+                }}
+              >
+                {r}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+        
+        {(role === "pandit" || role === "lama") && (
+          <View style={[styles.infoBox, { backgroundColor: theme.info + "20" }]}>
+            <Ionicons name="information-circle" size={16} color={theme.info} />
+            <Text style={[styles.infoText, { color: theme.info }]}>
+              {role === "pandit" ? "Pandit" : "Lama"} accounts require manual verification by an Admin before taking bookings.
+            </Text>
+          </View>
+        )}
+
+        {/* Religion Preference Toggle (Hidden for Lamas as they are inherently Buddhist) */}
+        {role !== "lama" && (
+          <>
+            <Text style={[styles.label, { color: theme.textSecondary }]}>Religion Preference</Text>
         <View style={styles.toggleRow}>
           <Pressable
             style={[
@@ -252,6 +290,19 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingHorizontal: 12,
     paddingVertical: 10,
+  },
+  infoBox: {
+    alignItems: "center",
+    borderRadius: 8,
+    flexDirection: "row",
+    marginBottom: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  infoText: {
+    fontSize: fonts.sizes.sm,
+    flex: 1,
+    marginLeft: 8,
   },
   errorText: {
     fontSize: fonts.sizes.sm,

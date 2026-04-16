@@ -77,8 +77,8 @@ if (fs.existsSync(frontendDistPath)) {
 if (activeStaticPath) {
   app.use(express.static(activeStaticPath));
   // Client-side routing catch-all
-  app.get("*", (req, res, next) => {
-    if (!req.path.startsWith("/api")) {
+  app.use((req, res, next) => {
+    if (req.method === "GET" && !req.path.startsWith("/api")) {
       res.sendFile(path.join(activeStaticPath, "index.html"));
     } else {
       next();

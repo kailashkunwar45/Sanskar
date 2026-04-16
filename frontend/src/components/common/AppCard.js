@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View, Platform } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 
 function AppCard({ children, onPress, style, elevation = 1 }) {
@@ -14,10 +14,14 @@ function AppCard({ children, onPress, style, elevation = 1 }) {
           {
             backgroundColor: theme.card,
             borderColor: theme.borderLight,
-            shadowColor: theme.shadow,
-            shadowOpacity: elevation * 0.04,
             elevation: elevation * 2,
             opacity: pressed ? 0.92 : 1,
+            ...(Platform.OS === "web"
+              ? { boxShadow: `0px 2px 6px ${theme.shadow}` }
+              : {
+                  shadowColor: theme.shadow,
+                  shadowOpacity: elevation * 0.04,
+                }),
           },
           style,
         ],
@@ -35,9 +39,13 @@ function AppCard({ children, onPress, style, elevation = 1 }) {
         {
           backgroundColor: theme.card,
           borderColor: theme.borderLight,
-          shadowColor: theme.shadow,
-          shadowOpacity: elevation * 0.04,
           elevation: elevation * 2,
+          ...(Platform.OS === "web"
+            ? { boxShadow: `0px 2px 6px ${theme.shadow}` }
+            : {
+                shadowColor: theme.shadow,
+                shadowOpacity: elevation * 0.04,
+              }),
         },
         style,
       ]}
@@ -54,8 +62,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     overflow: "hidden",
     padding: 14,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
+    ...(Platform.OS !== "web" && {
+      shadowOffset: { width: 0, height: 2 },
+      shadowRadius: 6,
+    }),
   },
 });
 

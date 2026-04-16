@@ -31,6 +31,19 @@ async function getBookings(req, res, next) {
 async function createBooking(req, res, next) {
   try {
     assertValid(req);
+    const User = require("../models/User");
+    const provider = await User.findById(req.body.panditOrLama);
+    if (!provider) {
+      const error = new Error("Provider not found");
+      error.statusCode = 404;
+      throw error;
+    }
+    if (!provider.isVerified) {
+      const error = new Error("This provider is pending admin verification and cannot accept bookings yet.");
+      error.statusCode = 400;
+      throw error;
+    }
+
     const created = await Booking.create({ ...req.body, user: req.user._id });
     return res.status(201).json({ success: true, data: created });
   } catch (error) {

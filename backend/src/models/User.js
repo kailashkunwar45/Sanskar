@@ -20,8 +20,22 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["customer", "admin", "vendor", "pandit", "superadmin"],
+    enum: ["customer", "admin", "vendor", "pandit", "lama", "superadmin"],
     default: "customer",
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  bio: {
+    type: String,
+    required: false,
+    default: "",
+  },
+  specialization: {
+    type: String,
+    required: false,
+    default: "",
   },
   religionPreference: {
     type: String,
