@@ -1,4 +1,6 @@
 const express = require("express");
+const path = require("path");
+const fs = require("fs");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
@@ -60,6 +62,30 @@ app.use("/api/payment", paymentRoutes);
 app.use("/api/festivals", festivalsRoutes);
 app.use("/api/ai-image", aiImageRoutes);
 app.use("/api/media", mediaRoutes);
+
+// --- FRONTEND STATIC SERVING ---
+const frontendDistPath = path.join(__dirname, "../../frontend/dist");
+const frontendWebBuildPath = path.join(__dirname, "../../frontend/web-build");
+let activeStaticPath = null;
+
+if (fs.existsSync(frontendDistPath)) {
+  activeStaticPath = frontendDistPath;
+} else if (fs.existsSync(frontendWebBuildPath)) {
+  activeStaticPath = frontendWebBuildPath;
+}
+
+if (activeStaticPath) {
+  app.use(express.static(activeStaticPath));
+  // Client-side routing catch-all
+  app.get("*", (req, res, next) => {
+    if (!req.path.startsWith("/api")) {
+      res.sendFile(path.join(activeStaticPath, "index.html"));
+    } else {
+      next();
+    }
+  });
+}
+// -------------------------------
 
 app.use((req, _res, next) => {
   const error = new Error(`Not Found - ${req.originalUrl}`);
