@@ -6,7 +6,7 @@ import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { useTheme } from "../contexts/ThemeContext";
 
 export default function RootNavigator() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isGuest, isLoading } = useAuth();
   const { theme } = useTheme();
 
   if (isLoading) {
@@ -19,7 +19,7 @@ export default function RootNavigator() {
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? <MainNavigator /> : <AuthNavigator />}
+      {isAuthenticated || isGuest ? <MainNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
 }

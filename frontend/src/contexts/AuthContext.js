@@ -17,6 +17,7 @@ const initialState = {
   refreshToken: null,
   isLoading: true,       // true while restoring session
   isAuthenticated: false,
+  isGuest: false,
 };
 
 function authReducer(state, action) {
@@ -41,6 +42,8 @@ function authReducer(state, action) {
       };
     case "LOGOUT":
       return { ...initialState, isLoading: false };
+    case "SKIP_AUTH":
+      return { ...state, isGuest: true, isLoading: false };
     case "SET_LOADING":
       return { ...state, isLoading: action.value };
     default:
@@ -109,6 +112,10 @@ export function AuthProvider({ children }) {
     return profileData.user;
   }, []);
 
+  const skipLogin = useCallback(() => {
+    dispatch({ type: "SKIP_AUTH" });
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       const rt = await storage.getRefreshToken();
@@ -127,8 +134,8 @@ export function AuthProvider({ children }) {
   }, [state.accessToken]);
 
   const value = useMemo(
-    () => ({ ...state, login, register, logout }),
-    [state, login, register, logout]
+    () => ({ ...state, login, register, skipLogin, logout }),
+    [state, login, register, skipLogin, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

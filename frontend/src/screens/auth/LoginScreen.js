@@ -17,8 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 function LoginScreen({ navigation }) {
   const { theme } = useTheme();
-  const { login } = useAuth();
-
+  const { login, skipLogin } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -100,6 +99,15 @@ function LoginScreen({ navigation }) {
           style={{ marginTop: 8 }}
         />
 
+        <Pressable 
+          onPress={skipLogin} 
+          style={styles.skipLink}
+        >
+          <Text style={[styles.skipLinkText, { color: theme.textSecondary }]}>
+            Skip for now
+          </Text>
+        </Pressable>
+
         <View style={styles.footer}>
           <Text style={[styles.footerText, { color: theme.textSecondary }]}>
             Don't have an account?
@@ -163,6 +171,15 @@ const styles = StyleSheet.create({
   },
   footerText: { fontSize: fonts.sizes.md },
   linkText: { fontSize: fonts.sizes.md, fontWeight: fonts.weights.semibold },
+  skipLink: {
+    marginTop: 16,
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  skipLinkText: {
+    fontSize: fonts.sizes.md,
+    fontWeight: fonts.weights.medium,
+  },
 });
 
 export default memo(LoginScreen);
