@@ -1,0 +1,39 @@
+services:
+  # Backend Node.js API
+  - type: web
+    name: sanskar-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false # You will need to provide this in Render dashboard
+      - key: JWT_SECRET
+        sync: false # You will need to provide this in Render dashboard
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+
+  # Frontend Static Site (Expo Web)
+  - type: web
+    name: sanskar-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm install && npx expo export -p web
+    staticPublishPath: web-build # Or 'dist' depending on Expo exact setup
+    autoDeploy: true
+    envVars:
+      - key: EXPO_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: sanskar-backend
+          envVarKey: RENDER_EXTERNAL_URL
