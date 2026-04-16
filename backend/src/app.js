@@ -41,9 +41,7 @@ app.use(
   })
 );
 
-app.get("/", (_req, res) => {
-  return res.send("Sanskar API Running");
-});
+// API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/articles", articlesRoutes);
 app.use("/api/rituals", ritualsRoutes);
