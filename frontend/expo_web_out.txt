@@ -1,0 +1,52 @@
+Starting project at C:\Users\LENOVO\OneDrive\Desktop\Sanskar\frontend
+Starting Metro Bundler
+
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+The following packages should be updated for best compatibility with the installed expo version:
+  expo@55.0.8 - expected version: ~55.0.11
+  expo-font@55.0.4 - expected version: ~55.0.6
+  expo-linear-gradient@55.0.9 - expected version: ~55.0.11
+  expo-status-bar@55.0.4 - expected version: ~55.0.5
+  react-native@0.83.2 - expected version: 0.83.4
+Your project may not work correctly until you install the expected versions of the packages.
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+Web .\index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web .\index.js ░░░░░░░░░░░░░░░░  1.0% (1/1)
+Web .\index.js ▓▓▓▓▓░░░░░░░░░░░ 37.1% (15/26)
+Web .\index.js ▓▓▓▓▓▓▓░░░░░░░░░ 44.4% (25/39)
+Web .\index.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 66.6% (40/49)
+Web .\index.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 74.0% (43/50)
+Web .\index.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 77.4% (44/50)
+Web .\index.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 77.4% ( 79/149)
+Web .\index.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 77.4% (119/199)
+Web .\index.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 77.4% (169/278)
+Web .\index.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 77.4% (224/355)
+Web .\index.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 77.4% (266/414)
+Web .\index.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 77.4% (685/802)
+Web .\index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 94.3% (965/994)
+Web .\index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 95.9% (1060/1087)
+Web Bundled 50389ms index.js (1104 modules)
+ LOG  [web] Logs will appear in the browser console
+Web .\index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 531ms index.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web .\index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 408ms index.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web .\index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 106ms index.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web .\index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 73ms index.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web .\index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 198ms index.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web .\index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 122ms index.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web .\index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 254ms index.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Terminate batch job (Y/N)? 

@@ -1,0 +1,4 @@
+Starting Metro Bundler
+
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+Web Bundling failed 691ms index.js (1 module)
