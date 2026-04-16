@@ -1,7 +1,6 @@
 import { memo, useCallback, useEffect, useState } from "react";
 import {
   Alert,
-  Alert,
   FlatList,
   Modal,
   Pressable,
