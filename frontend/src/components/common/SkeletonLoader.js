@@ -1,5 +1,5 @@
 import { memo, useEffect, useRef } from "react";
-import { Animated, StyleSheet, View } from "react-native";
+import { Animated, Platform, StyleSheet, View } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 
 function SkeletonBox({ width = "100%", height = 16, borderRadius = 8, style }) {
@@ -12,12 +12,12 @@ function SkeletonBox({ width = "100%", height = 16, borderRadius = 8, style }) {
         Animated.timing(opacity, {
           toValue: 1,
           duration: 800,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== "web",
         }),
         Animated.timing(opacity, {
           toValue: 0.3,
           duration: 800,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== "web",
         }),
       ])
     );

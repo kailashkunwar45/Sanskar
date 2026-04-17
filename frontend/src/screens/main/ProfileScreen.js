@@ -19,7 +19,7 @@ import { fetchOrders } from "../../services/api";
 
 function ProfileScreen({ navigation }) {
   const { theme, themeName, toggleTheme } = useTheme();
-  const { user, logout } = useAuth();
+  const { user, logout, isGuest } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -218,10 +218,10 @@ function ProfileScreen({ navigation }) {
         ))
       )}
 
-      {/* Logout */}
+      {/* Logout / Sign In */}
       <AppButton
-        title="Sign Out"
-        variant="outline"
+        title={isGuest ? "Sign In" : "Sign Out"}
+        variant={isGuest ? "primary" : "outline"}
         onPress={handleLogout}
         style={{ marginTop: 20 }}
       />

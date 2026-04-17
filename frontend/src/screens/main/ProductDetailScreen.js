@@ -8,15 +8,14 @@ import {
   View,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
-import AppButton from "../../components/common/AppButton";
-import AppCard from "../../components/common/AppCard";
-import { ListSkeleton } from "../../components/common/SkeletonLoader";
+import { useAuth } from "../../contexts/AuthContext";
 import fonts from "../../theme/fonts";
 import { Ionicons } from "@expo/vector-icons";
 import { fetchProductById, addToCart, fetchReviews } from "../../services/api";
 
 function ProductDetailScreen({ route, navigation }) {
   const { theme } = useTheme();
+  const { isGuest, logout } = useAuth();
   const { productId } = route.params;
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -41,6 +40,17 @@ function ProductDetailScreen({ route, navigation }) {
   }, [productId]);
 
   const handleAddToCart = useCallback(async () => {
+    if (isGuest) {
+      Alert.alert(
+        "Sign In Required",
+        "You need to be signed in to add items to your cart.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Sign In", onPress: logout },
+        ]
+      );
+      return;
+    }
     try {
       setAddingToCart(true);
       await addToCart(productId, 1);
@@ -56,7 +66,7 @@ function ProductDetailScreen({ route, navigation }) {
     } finally {
       setAddingToCart(false);
     }
-  }, [productId, navigation]);
+  }, [productId, navigation, isGuest, logout]);
 
   if (loading) {
     return (

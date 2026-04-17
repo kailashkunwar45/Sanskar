@@ -8,15 +8,14 @@ import {
   Text,
   View,
 } from "react-native";
-import { useTheme } from "../../contexts/ThemeContext";
-import AppButton from "../../components/common/AppButton";
-import { ListSkeleton } from "../../components/common/SkeletonLoader";
+import { useAuth } from "../../contexts/AuthContext";
 import fonts from "../../theme/fonts";
 import { Ionicons } from "@expo/vector-icons";
 import { fetchCart, updateCartItem, removeCartItem, clearCart } from "../../services/api";
 
 function CartScreen({ navigation }) {
   const { theme } = useTheme();
+  const { isGuest, logout } = useAuth();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -205,7 +204,20 @@ function CartScreen({ navigation }) {
             </Pressable>
             <AppButton
               title="Checkout"
-              onPress={() => navigation.navigate("Checkout")}
+              onPress={() => {
+                if (isGuest) {
+                  Alert.alert(
+                    "Sign In Required",
+                    "You need to be signed in to checkout.",
+                    [
+                      { text: "Cancel", style: "cancel" },
+                      { text: "Sign In", onPress: logout },
+                    ]
+                  );
+                } else {
+                  navigation.navigate("Checkout");
+                }
+              }}
               size="md"
               style={{ paddingHorizontal: 24 }}
             />

@@ -31,10 +31,12 @@ app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        "default-src": ["'self'", "http://localhost:5001", "http://localhost:5173"],
         "connect-src": ["'self'", "http://localhost:5001", "http://localhost:5173"],
         "img-src": ["'self'", "data:", "https://res.cloudinary.com"],
         "script-src": ["'self'", "'unsafe-inline'"],
+        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        "font-src": ["'self'", "https://fonts.gstatic.com"],
       },
     },
   })

@@ -7,15 +7,13 @@ import {
   View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../../contexts/ThemeContext";
-import AppCard from "../../components/common/AppCard";
-import AppButton from "../../components/common/AppButton";
-import { ListSkeleton } from "../../components/common/SkeletonLoader";
+import { useAuth } from "../../contexts/AuthContext";
 import fonts from "../../theme/fonts";
 import { fetchRitualById, bulkAddToCart } from "../../services/api";
 
 function RitualDetailScreen({ route, navigation }) {
   const { theme } = useTheme();
+  const { isGuest, logout } = useAuth();
   const { ritualId } = route.params;
   const [ritual, setRitual] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -36,6 +34,17 @@ function RitualDetailScreen({ route, navigation }) {
   }, [ritualId]);
 
   const handleBuyAllItems = useCallback(async () => {
+    if (isGuest) {
+      Alert.alert(
+        "Sign In Required",
+        "You need to be signed in to purchase items.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Sign In", onPress: logout },
+        ]
+      );
+      return;
+    }
     if (!ritual?.linkedProducts || ritual.linkedProducts.length === 0) {
       Alert.alert("Notice", "No purchasable items linked to this ritual yet.");
       return;
@@ -60,14 +69,24 @@ function RitualDetailScreen({ route, navigation }) {
     } finally {
       setCheckingOut(false);
     }
-  }, [navigation, ritual]);
+  }, [navigation, ritual, isGuest, logout]);
 
   const handleBookPanditLama = useCallback(() => {
+    if (isGuest) {
+      Alert.alert(
+        "Sign In Required",
+        "You need to be signed in to book a Pandit or Lama.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Sign In", onPress: logout },
+        ]
+      );
+      return;
+    }
     setBooking(true);
-    // Navigate to booking tab; later we can pass ritual context
     navigation.navigate("BookingTab");
     setBooking(false);
-  }, [navigation]);
+  }, [navigation, isGuest, logout]);
 
   if (loading) {
     return (

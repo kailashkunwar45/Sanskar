@@ -9,16 +9,14 @@ import {
   Text,
   View,
 } from "react-native";
-import { useTheme } from "../../contexts/ThemeContext";
-import AppCard from "../../components/common/AppCard";
-import AppButton from "../../components/common/AppButton";
-import { ListSkeleton } from "../../components/common/SkeletonLoader";
+import { useAuth } from "../../contexts/AuthContext";
 import fonts from "../../theme/fonts";
 import { Ionicons } from "@expo/vector-icons";
 import { fetchBookings, fetchProviders, createBooking } from "../../services/api";
 
 function BookingScreen({ navigation }) {
   const { theme } = useTheme();
+  const { isGuest, logout } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -63,6 +61,17 @@ function BookingScreen({ navigation }) {
   }, []);
 
   const openBookModal = () => {
+    if (isGuest) {
+      Alert.alert(
+        "Sign In Required",
+        "You need to be signed in to book a service.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Sign In", onPress: logout },
+        ]
+      );
+      return;
+    }
     setShowProviders(true);
     loadProvidersList();
   };
