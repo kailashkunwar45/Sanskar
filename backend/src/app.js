@@ -27,12 +27,18 @@ const mediaRoutes = require("./routes/mediaRoutes");
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5001",
+  "https://sanskar-bu44.onrender.com",
+];
+
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        "default-src": ["'self'", "http://localhost:5001", "http://localhost:5173"],
-        "connect-src": ["'self'", "http://localhost:5001", "http://localhost:5173"],
+        "default-src": ["'self'", ...allowedOrigins],
+        "connect-src": ["'self'", ...allowedOrigins],
         "img-src": ["'self'", "data:", "https://res.cloudinary.com"],
         "script-src": ["'self'", "'unsafe-inline'"],
         "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
@@ -42,10 +48,15 @@ app.use(
   })
 );
 
-const clientOrigin = process.env.CLIENT_URL || "*";
 app.use(
   cors({
-    origin: clientOrigin,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
