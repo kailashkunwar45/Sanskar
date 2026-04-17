@@ -27,8 +27,26 @@ const mediaRoutes = require("./routes/mediaRoutes");
 
 const app = express();
 
-app.use(helmet());
-app.use(cors());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        "connect-src": ["'self'", "http://localhost:5001", "http://localhost:5173"],
+        "img-src": ["'self'", "data:", "https://res.cloudinary.com"],
+        "script-src": ["'self'", "'unsafe-inline'"],
+      },
+    },
+  })
+);
+
+const clientOrigin = process.env.CLIENT_URL || "*";
+app.use(
+  cors({
+    origin: clientOrigin,
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 if (process.env.NODE_ENV === "development") {

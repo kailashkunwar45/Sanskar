@@ -5,6 +5,57 @@ import MainNavigator from "./MainNavigator";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { useTheme } from "../contexts/ThemeContext";
 
+const linking = {
+  prefixes: ["http://localhost:5173", "sanskar://"],
+  config: {
+    screens: {
+      Onboarding: "onboarding",
+      Login: "login",
+      Register: "register",
+      HomeTab: {
+        path: "home",
+        screens: {
+          Home: "",
+          Articles: "articles",
+          ArticleDetail: "articles/:id",
+          Calendar: "calendar",
+          Chat: "chat",
+        },
+      },
+      ProductsTab: {
+        path: "products",
+        screens: {
+          Products: "",
+          ProductDetail: ":id",
+        },
+      },
+      RitualsTab: {
+        path: "rituals",
+        screens: {
+          Rituals: "",
+          RitualDetail: ":id",
+        },
+      },
+      CartTab: {
+        path: "cart",
+        screens: {
+          Cart: "",
+          Checkout: "checkout",
+        },
+      },
+      BookingTab: "booking",
+      ProfileTab: {
+        path: "profile",
+        screens: {
+          Profile: "",
+          AdminDashboard: "admin",
+          PanditDashboard: "pandit",
+        },
+      },
+    },
+  },
+};
+
 export default function RootNavigator() {
   const { isAuthenticated, isGuest, isLoading } = useAuth();
   const { theme } = useTheme();
@@ -18,7 +69,7 @@ export default function RootNavigator() {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       {isAuthenticated || isGuest ? <MainNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
