@@ -9,9 +9,12 @@ import {
   View,
 } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTheme } from "../../contexts/ThemeContext";
 import fonts from "../../theme/fonts";
 import { Ionicons } from "@expo/vector-icons";
 import { fetchCart, updateCartItem, removeCartItem, clearCart } from "../../services/api";
+import { ListSkeleton } from "../../components/common/SkeletonLoader";
+import AppButton from "../../components/common/AppButton";
 
 function CartScreen({ navigation }) {
   const { theme } = useTheme();
