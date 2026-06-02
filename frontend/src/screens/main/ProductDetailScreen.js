@@ -13,6 +13,8 @@ import fonts from "../../theme/fonts";
 import { Ionicons } from "@expo/vector-icons";
 import { fetchProductById, addToCart, fetchReviews } from "../../services/api";
 import { ListSkeleton } from "../../components/common/SkeletonLoader";
+import AppCard from "../../components/common/AppCard";
+import AppButton from "../../components/common/AppButton";
 
 function ProductDetailScreen({ route, navigation }) {
   const { theme } = useTheme();

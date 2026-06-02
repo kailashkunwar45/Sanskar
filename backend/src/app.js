@@ -34,12 +34,21 @@ const allowedOrigins = [
   "https://sanskar-bu44.onrender.com",
 ];
 
+const checkOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  const lowerOrigin = origin.toLowerCase();
+  if (lowerOrigin.endsWith(".github.io") || lowerOrigin.includes("github.io")) return true;
+  if (lowerOrigin.endsWith(".vercel.app") || lowerOrigin.endsWith(".netlify.app")) return true;
+  return false;
+};
+
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
         "default-src": ["'self'", ...allowedOrigins],
-        "connect-src": ["'self'", ...allowedOrigins],
+        "connect-src": ["'self'", "*"],
         "img-src": ["'self'", "data:", "https://res.cloudinary.com"],
         "script-src": ["'self'", "'unsafe-inline'"],
         "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
@@ -52,7 +61,7 @@ app.use(
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (checkOrigin(origin)) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));

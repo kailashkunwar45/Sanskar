@@ -8,8 +8,12 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTheme } from "../../contexts/ThemeContext";
 import fonts from "../../theme/fonts";
 import { fetchRitualById, bulkAddToCart } from "../../services/api";
+import { ListSkeleton } from "../../components/common/SkeletonLoader";
+import AppCard from "../../components/common/AppCard";
+import AppButton from "../../components/common/AppButton";
 
 function RitualDetailScreen({ route, navigation }) {
   const { theme } = useTheme();
