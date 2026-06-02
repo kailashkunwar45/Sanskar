@@ -28,7 +28,7 @@ function RitualDetailScreen({ route, navigation }) {
     (async () => {
       try {
         const res = await fetchRitualById(ritualId);
-        setRitual(res.ritual || res);
+        setRitual(res.data || res.ritual || res);
       } catch {
         Alert.alert("Error", "Unable to load ritual details right now.");
       } finally {

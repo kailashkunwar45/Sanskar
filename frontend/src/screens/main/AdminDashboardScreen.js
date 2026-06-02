@@ -1287,171 +1287,42 @@ function AdminDashboardScreen({ navigation }) {
         {activeTab === "products" && (
           <View>
             <View style={styles.tabHeader}>
-              <Text style={[styles.tabTitle, { color: theme.textPrimary }]}>Manage Sacred Shop Products</Text>
-              {!formMode && (
-                <AppButton
-                  title="Add Product"
-                  size="sm"
-                  onPress={() => setFormMode("add-product")}
-                  icon="add"
-                />
-              )}
+              <Text style={[styles.tabTitle, { color: theme.textPrimary }]}>Sacred Shop Products</Text>
             </View>
 
-            {formMode === "add-product" ? (
-              <AppCard style={styles.formCard}>
-                <Text style={[styles.formHeaderTitle, { color: theme.textPrimary }]}>Create New Product</Text>
-
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Product Name *</Text>
-                <TextInput
-                  style={[styles.input, { borderColor: theme.border, color: theme.textPrimary }]}
-                  placeholder="Enter product name"
-                  value={productForm.name}
-                  onChangeText={v => setProductForm(f => ({ ...f, name: v }))}
-                />
-
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Description *</Text>
-                <TextInput
-                  style={[styles.input, { borderColor: theme.border, color: theme.textPrimary, height: 80 }]}
-                  placeholder="Enter product features/details"
-                  multiline
-                  value={productForm.description}
-                  onChangeText={v => setProductForm(f => ({ ...f, description: v }))}
-                />
-
-                <View style={styles.gridRow}>
-                  <View style={{ flex: 1, marginRight: 8 }}>
-                    <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Price (Rs.) *</Text>
-                    <TextInput
-                      style={[styles.input, { borderColor: theme.border, color: theme.textPrimary }]}
-                      placeholder="e.g. 500"
-                      keyboardType="numeric"
-                      value={productForm.price}
-                      onChangeText={v => setProductForm(f => ({ ...f, price: v }))}
-                    />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Stock *</Text>
-                    <TextInput
-                      style={[styles.input, { borderColor: theme.border, color: theme.textPrimary }]}
-                      placeholder="e.g. 25"
-                      keyboardType="numeric"
-                      value={productForm.stock}
-                      onChangeText={v => setProductForm(f => ({ ...f, stock: v }))}
-                    />
-                  </View>
-                </View>
-
-                {/* Cultural Category */}
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>1. Cultural Category (Select Multiple)</Text>
-                <View style={[styles.checkboxContainer, { borderColor: theme.border }]}>
-                  {CULTURES.map(c => {
-                    const active = productForm.culturalCategories.includes(c);
-                    return (
-                      <Pressable
-                        key={c}
-                        onPress={() => toggleArrayItem("culturalCategories", c, "product")}
-                        style={[styles.checkboxOption, active && { backgroundColor: theme.primary + "15" }]}
-                      >
-                        <Ionicons name={active ? "checkbox" : "square-outline"} size={18} color={theme.primary} />
-                        <Text style={[styles.checkboxText, { color: theme.textPrimary }]}>{c.toUpperCase()}</Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-
-                {/* Ritual Category */}
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>2. Ritual Category (Select Multiple)</Text>
-                <View style={[styles.checkboxContainer, { borderColor: theme.border }]}>
-                  {RITUAL_CATEGORIES.map(r => {
-                    const active = productForm.ritualCategories.includes(r);
-                    return (
-                      <Pressable
-                        key={r}
-                        onPress={() => toggleArrayItem("ritualCategories", r, "product")}
-                        style={[styles.checkboxOption, active && { backgroundColor: theme.accent + "15" }]}
-                      >
-                        <Ionicons name={active ? "checkbox" : "square-outline"} size={18} color={theme.accent} />
-                        <Text style={[styles.checkboxText, { color: theme.textPrimary }]}>{r.toUpperCase()}</Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-
-                {/* Product Shop Category */}
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>3. Product Shop Category (Select Multiple)</Text>
-                <View style={[styles.checkboxContainer, { borderColor: theme.border }]}>
-                  {PRODUCT_CATEGORIES.map(pc => {
-                    const active = productForm.categories.includes(pc);
-                    return (
-                      <Pressable
-                        key={pc}
-                        onPress={() => toggleArrayItem("categories", pc, "product")}
-                        style={[styles.checkboxOption, active && { backgroundColor: theme.primary + "15" }]}
-                      >
-                        <Ionicons name={active ? "checkbox" : "square-outline"} size={18} color={theme.primary} />
-                        <Text style={[styles.checkboxText, { color: theme.textPrimary }]}>{pc.toUpperCase()}</Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-
-                {/* Upload Section */}
-                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Product Image</Text>
-                <Pressable onPress={() => triggerImagePick('product')} style={[styles.uploadBox, { borderColor: theme.border, backgroundColor: theme.primaryLight + "08" }]}>
-                  {productForm.imageUrl ? (
-                    <Image source={{ uri: productForm.imageUrl }} style={styles.previewImage} />
-                  ) : (
-                    <>
-                      <Ionicons name="image-outline" size={32} color={theme.primary} />
-                      <Text style={{ color: theme.textSecondary, fontSize: 12, marginTop: 4 }}>Click to Upload Product Image</Text>
-                    </>
-                  )}
-                </Pressable>
-
-                <View style={[styles.row, { marginTop: 20, gap: 12, justifyContent: "flex-end" }]}>
-                  <AppButton title="Cancel" variant="outline" onPress={() => setFormMode(null)} />
-                  <AppButton title="Save Product" onPress={handleAddProduct} />
-                </View>
-              </AppCard>
-            ) : (
-              <View>
-                {products.length === 0 ? (
-                  <Text style={[styles.emptyText, { color: theme.textMuted }]}>No products found in shop.</Text>
-                ) : (
-                  products.map(prod => (
-                    <AppCard key={prod._id} style={styles.listRowCard}>
-                      <View style={styles.row}>
-                        {prod.images?.[0] ? (
-                          <Image source={{ uri: prod.images[0] }} style={styles.thumbnail} />
-                        ) : (
-                          <View style={[styles.thumbnailPlaceholder, { backgroundColor: theme.primaryLight + "15" }]}>
-                            <Ionicons name="cube" size={20} color={theme.primary} />
-                          </View>
-                        )}
-                        <View style={{ flex: 1, marginLeft: 12 }}>
-                          <Text style={[styles.listRowTitle, { color: theme.textPrimary }]} numberOfLines={1}>{prod.name}</Text>
-                          <Text style={{ color: theme.textMuted, fontSize: 11 }}>
-                            Price: Rs.{prod.price} • Stock: {prod.stock}
-                          </Text>
+            <View>
+              {products.length === 0 ? (
+                <Text style={[styles.emptyText, { color: theme.textMuted }]}>No products found in shop.</Text>
+              ) : (
+                products.map(prod => (
+                  <AppCard key={prod._id} style={styles.listRowCard}>
+                    <View style={styles.row}>
+                      {prod.images?.[0] ? (
+                        <Image source={{ uri: prod.images[0] }} style={styles.thumbnail} />
+                      ) : (
+                        <View style={[styles.thumbnailPlaceholder, { backgroundColor: theme.primaryLight + "15" }]}>
+                          <Ionicons name="cube" size={20} color={theme.primary} />
                         </View>
-                        <View style={{ flexDirection: "row", gap: 6 }}>
-                          <AppButton
-                            title="View"
-                            size="sm"
-                            variant="outline"
-                            onPress={() => navigation.navigate("ProductDetail", { productId: prod._id })}
-                          />
-                          <Pressable onPress={() => handleDeleteProduct(prod._id)} style={{ padding: 6 }}>
-                            <Ionicons name="trash-outline" size={20} color={theme.danger} />
-                          </Pressable>
-                        </View>
+                      )}
+                      <View style={{ flex: 1, marginLeft: 12 }}>
+                        <Text style={[styles.listRowTitle, { color: theme.textPrimary }]} numberOfLines={1}>{prod.name}</Text>
+                        <Text style={{ color: theme.textMuted, fontSize: 11 }}>
+                          Price: Rs.{prod.price} • Stock: {prod.stock}
+                        </Text>
                       </View>
-                    </AppCard>
-                  ))
-                )}
-              </View>
-            )}
+                      <View style={{ flexDirection: "row", gap: 6 }}>
+                        <AppButton
+                          title="View"
+                          size="sm"
+                          variant="outline"
+                          onPress={() => navigation.navigate("ProductDetail", { productId: prod._id })}
+                        />
+                      </View>
+                    </View>
+                  </AppCard>
+                ))
+              )}
+            </View>
           </View>
         )}
 

@@ -288,12 +288,45 @@ function AdminStackScreen() {
   );
 }
 
+const VendorStack = createNativeStackNavigator();
+
+function VendorStackScreen() {
+  const { theme } = useTheme();
+  return (
+    <VendorStack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.surface },
+        headerTintColor: theme.textPrimary,
+        headerTitleStyle: { fontWeight: fonts.weights.semibold },
+      }}
+    >
+      <VendorStack.Screen
+        name="VendorDashboard"
+        component={VendorDashboardScreen}
+        options={{ headerShown: false }}
+      />
+      <VendorStack.Screen
+        name="ProductDetail"
+        component={ProductDetailScreen}
+        options={{ title: "Product Detail" }}
+      />
+    </VendorStack.Navigator>
+  );
+}
+
 // 3. VENDOR TABS (Seller Central)
 function VendorTabs() {
   const { theme } = useTheme();
   return (
     <Tab.Navigator screenOptions={tabOptions(theme)}>
-      <Tab.Screen name="VendorDash" component={VendorDashboardScreen} options={{ title: "Seller Central", tabBarIcon: ({ color }) => <Ionicons name="business-outline" size={22} color={color} /> }} />
+      <Tab.Screen
+        name="VendorTab"
+        component={VendorStackScreen}
+        options={{
+          title: "Seller Central",
+          tabBarIcon: ({ color }) => <Ionicons name="business-outline" size={22} color={color} />,
+        }}
+      />
       <Tab.Screen name="RitualsTab" component={RitualsStackScreen} options={{ title: "Rituals" }} />
       <Tab.Screen name="BookingTab" component={BookingScreen} options={{ title: "Book Service" }} />
       <Tab.Screen name="ProfileTab" component={ProfileStackScreen} options={{ title: "Profile" }} />

@@ -32,8 +32,8 @@ function ProductDetailScreen({ route, navigation }) {
           fetchProductById(productId),
           fetchReviews(productId),
         ]);
-        if (pRes.status === "fulfilled") setProduct(pRes.value.product || pRes.value);
-        if (rRes.status === "fulfilled") setReviews(rRes.value.reviews || []);
+        if (pRes.status === "fulfilled") setProduct(pRes.value.data || pRes.value.product || pRes.value);
+        if (rRes.status === "fulfilled") setReviews(rRes.value.data || rRes.value.reviews || []);
       } catch {
         // silent
       } finally {
