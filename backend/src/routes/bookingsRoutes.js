@@ -11,7 +11,7 @@ const authorize = require("../middlewares/authorize");
 
 const router = express.Router();
 const adminOnly = [protect, authorize("admin")];
-const allowed = [protect, authorize("customer", "admin", "pandit")];
+const allowed = [protect, authorize("customer", "admin", "pandit", "lama")];
 const idValidation = [param("id").isMongoId()];
 const createValidation = [
   body("panditOrLama").isMongoId(),

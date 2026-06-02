@@ -49,6 +49,28 @@ async function createFestival(req, res, next) {
   }
 }
 
+async function updateFestival(req, res, next) {
+  try {
+    handleValidation(req);
+    const { id } = req.params;
+    const { title, date, description, religion, image } = req.body;
+
+    const festival = await Festival.findByIdAndUpdate(
+      id,
+      { title, date: new Date(date), description, religion, image },
+      { new: true, runValidators: true }
+    );
+
+    if (!festival) {
+      return res.status(404).json({ success: false, message: "Festival not found" });
+    }
+
+    return res.status(200).json({ success: true, festival });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function deleteFestival(req, res, next) {
   try {
     const { id } = req.params;
@@ -62,4 +84,4 @@ async function deleteFestival(req, res, next) {
   }
 }
 
-module.exports = { getFestivalsByMonth, createFestival, deleteFestival };
+module.exports = { getFestivalsByMonth, createFestival, deleteFestival, updateFestival };

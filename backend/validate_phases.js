@@ -14,20 +14,20 @@ const phases = {
 console.log('--- EXECUTING SEQUENTIAL TESTS (PHASE 4 - 12) ---');
 
 Object.entries(phases).forEach(([phaseName, files]) => {
-  console.log(\n> Validating ...);
+  console.log(`\n> Validating ${phaseName}...`);
   let passed = true;
   files.forEach(file => {
     // Check if in controllers or routes
     const controllerPath = path.join(__dirname, 'src', 'controllers', file);
     const routePath = path.join(__dirname, 'src', 'routes', file);
     if (!fs.existsSync(controllerPath) && !fs.existsSync(routePath)) {
-        console.error(  [FAILED] Missing: );
+        console.error(`  [FAILED] Missing: ${file}`);
         passed = false;
     } else {
-        console.log(  [OK] Validated endpoints in: );
+        console.log(`  [OK] Validated endpoints in: ${file}`);
     }
   });
   if (passed) {
-      console.log(?  runs perfectly. Moving to next...);
+      console.log(`✓ ${phaseName} runs perfectly. Moving to next...`);
   }
 });

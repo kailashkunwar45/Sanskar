@@ -29,7 +29,7 @@ function HomeScreen({ navigation }) {
     { id: "products", icon: "storefront-outline", label: "Products", screen: "ProductsTab" },
     { id: "rituals", icon: "book-outline", label: "Rituals", screen: "RitualsTab" },
     { id: "booking", icon: "people-outline", label: "Booking", screen: "BookingTab" },
-    { id: "calendar", icon: "calendar-outline", label: "Calendar", screen: "Calendar" },
+    { id: "calendar", icon: "calendar-outline", label: "Calendar", screen: "CalendarTab" },
   ];
 
   const loadHomeData = useCallback(async () => {

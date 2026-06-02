@@ -13,9 +13,11 @@ function assertValid(req) {
 
 async function getProducts(req, res, next) {
   try {
-    const { category, minPrice, maxPrice, search } = req.query;
+    const { category, culturalCategory, ritualCategory, minPrice, maxPrice, search } = req.query;
     const filter = {};
     if (category) filter.category = category;
+    if (culturalCategory) filter.culturalCategory = culturalCategory;
+    if (ritualCategory) filter.ritualCategory = ritualCategory;
     if (search) filter.name = { $regex: search, $options: "i" };
     if (minPrice || maxPrice) {
       filter.price = {};

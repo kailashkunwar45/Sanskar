@@ -20,13 +20,29 @@ const { width } = Dimensions.get("window");
 const CARD_WIDTH = (width - 48) / 2;
 
 const CATEGORIES = [
-  { key: "all", label: "All" },
+  { key: "all", label: "All Products" },
   { key: "pooja-item", label: "Pooja" },
   { key: "statue", label: "Statues" },
   { key: "clothing", label: "Clothing" },
   { key: "book", label: "Books" },
   { key: "accessory", label: "Accessories" },
   { key: "other", label: "Other" },
+];
+
+const CULTURES = [
+  { key: "all", label: "All Cultures" },
+  { key: "hindu", label: "Hinduism" },
+  { key: "buddhist", label: "Buddhism" },
+];
+
+const RITUALS = [
+  { key: "all", label: "All Rituals" },
+  { key: "daily", label: "Daily Rituals" },
+  { key: "festival", label: "Festival Rituals" },
+  { key: "ceremony", label: "Ceremonies" },
+  { key: "wedding", label: "Weddings" },
+  { key: "funeral", label: "Funeral" },
+  { key: "other", label: "Other Rituals" },
 ];
 
 function ProductsScreen({ navigation }) {
@@ -37,14 +53,18 @@ function ProductsScreen({ navigation }) {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [category, setCategory] = useState("all");
+  const [culture, setCulture] = useState("all");
+  const [ritual, setRitual] = useState("all");
   const [search, setSearch] = useState("");
 
   const loadProducts = useCallback(
-    async (pageNum = 1, cat = category, reset = false) => {
+    async (pageNum = 1, cat = category, cult = culture, rit = ritual, reset = false) => {
       try {
         const catParam = cat === "all" ? undefined : cat;
-        const res = await fetchProducts(pageNum, 10, catParam);
-        const list = res.products || [];
+        const cultParam = cult === "all" ? undefined : cult;
+        const ritParam = rit === "all" ? undefined : rit;
+        const res = await fetchProducts(pageNum, 10, catParam, cultParam, ritParam);
+        const list = res.products || res.data || [];
         setProducts((prev) => (reset ? list : [...prev, ...list]));
         setHasMore(list.length === 10);
       } catch {
@@ -54,27 +74,27 @@ function ProductsScreen({ navigation }) {
         setRefreshing(false);
       }
     },
-    [category]
+    [category, culture, ritual]
   );
 
   useEffect(() => {
     setLoading(true);
     setPage(1);
-    loadProducts(1, category, true);
-  }, [category]);
+    loadProducts(1, category, culture, ritual, true);
+  }, [category, culture, ritual]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setPage(1);
-    loadProducts(1, category, true);
-  }, [loadProducts, category]);
+    loadProducts(1, category, culture, ritual, true);
+  }, [loadProducts, category, culture, ritual]);
 
   const onEndReached = useCallback(() => {
     if (!hasMore || loading) return;
     const next = page + 1;
     setPage(next);
-    loadProducts(next, category, false);
-  }, [hasMore, loading, page, loadProducts, category]);
+    loadProducts(next, category, culture, ritual, false);
+  }, [hasMore, loading, page, loadProducts, category, culture, ritual]);
 
   const filteredProducts = useMemo(() => {
     if (!search.trim()) return products;
@@ -143,7 +163,83 @@ function ProductsScreen({ navigation }) {
             style={[styles.searchInput, { color: theme.textPrimary }]}
           />
         </View>
-        {/* Category Filter */}
+
+        {/* Culture Category Filter */}
+        <Text style={{ fontSize: 11, fontWeight: "bold", color: theme.textMuted, marginBottom: 4 }}>CULTURE CATEGORY</Text>
+        <FlatList
+          data={CULTURES}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(c) => c.key}
+          contentContainerStyle={styles.catRow}
+          renderItem={({ item: cult }) => (
+            <Pressable
+              onPress={() => setCulture(cult.key)}
+              style={[
+                styles.catChip,
+                {
+                  backgroundColor:
+                    culture === cult.key ? theme.primary : theme.surface,
+                  borderColor:
+                    culture === cult.key ? theme.primary : theme.border,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  color:
+                    culture === cult.key
+                      ? theme.textOnPrimary
+                      : theme.textSecondary,
+                  fontSize: fonts.sizes.sm - 1,
+                  fontWeight: fonts.weights.medium,
+                }}
+              >
+                {cult.label}
+              </Text>
+            </Pressable>
+          )}
+        />
+
+        {/* Ritual Category Filter */}
+        <Text style={{ fontSize: 11, fontWeight: "bold", color: theme.textMuted, marginBottom: 4 }}>RITUAL CATEGORY</Text>
+        <FlatList
+          data={RITUALS}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(r) => r.key}
+          contentContainerStyle={styles.catRow}
+          renderItem={({ item: rit }) => (
+            <Pressable
+              onPress={() => setRitual(rit.key)}
+              style={[
+                styles.catChip,
+                {
+                  backgroundColor:
+                    ritual === rit.key ? theme.accent : theme.surface,
+                  borderColor:
+                    ritual === rit.key ? theme.accent : theme.border,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  color:
+                    ritual === rit.key
+                      ? theme.textOnPrimary
+                      : theme.textSecondary,
+                  fontSize: fonts.sizes.sm - 1,
+                  fontWeight: fonts.weights.medium,
+                }}
+              >
+                {rit.label}
+              </Text>
+            </Pressable>
+          )}
+        />
+
+        {/* Product Category Filter */}
+        <Text style={{ fontSize: 11, fontWeight: "bold", color: theme.textMuted, marginBottom: 4 }}>PRODUCTS CATEGORY</Text>
         <FlatList
           data={CATEGORIES}
           horizontal
@@ -169,7 +265,7 @@ function ProductsScreen({ navigation }) {
                     category === cat.key
                       ? theme.textOnPrimary
                       : theme.textSecondary,
-                  fontSize: fonts.sizes.sm,
+                  fontSize: fonts.sizes.sm - 1,
                   fontWeight: fonts.weights.medium,
                 }}
               >
@@ -180,7 +276,7 @@ function ProductsScreen({ navigation }) {
         />
       </>
     ),
-    [theme, search, category]
+    [theme, search, category, culture, ritual]
   );
 
   if (loading && products.length === 0) {

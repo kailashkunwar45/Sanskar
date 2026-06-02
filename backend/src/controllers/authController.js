@@ -7,7 +7,7 @@ function createAccessToken(user) {
   return jwt.sign(
     { sub: user._id.toString(), role: user.role, type: "access" },
     process.env.JWT_SECRET,
-    { expiresIn: "15m" }
+    { expiresIn: "30d" }
   );
 }
 
@@ -60,9 +60,9 @@ async function register(req, res, next) {
       throw error;
     }
 
-    // Providers must be verified by admin; customers are auto-verified
-    const isProvider = role === "pandit" || role === "lama";
-    const isVerified = !isProvider;
+    // Providers and Vendors must be verified by admin; customers are auto-verified
+    const isAutoVerified = role === "customer";
+    const isVerified = isAutoVerified;
 
     // Auto-assign religion preference based on role if not explicitly set
     let finalReligion = religionPreference;

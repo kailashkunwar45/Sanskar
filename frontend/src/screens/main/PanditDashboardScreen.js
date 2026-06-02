@@ -6,13 +6,14 @@ import {
   Text,
   View,
 } from "react-native";
+import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import AppCard from "../../components/common/AppCard";
 import AppButton from "../../components/common/AppButton";
 import { ListSkeleton } from "../../components/common/SkeletonLoader";
 import fonts from "../../theme/fonts";
 import { Ionicons } from "@expo/vector-icons";
-import { fetchBookings } from "../../services/api";
+import { fetchBookings, updateBooking } from "../../services/api";
 
 function PanditDashboardScreen() {
   const { theme } = useTheme();

@@ -12,10 +12,11 @@ import { useAuth } from "../../contexts/AuthContext";
 import fonts from "../../theme/fonts";
 import { Ionicons } from "@expo/vector-icons";
 import { fetchProductById, addToCart, fetchReviews } from "../../services/api";
+import { ListSkeleton } from "../../components/common/SkeletonLoader";
 
 function ProductDetailScreen({ route, navigation }) {
   const { theme } = useTheme();
-  const { isGuest, logout } = useAuth();
+  const { isGuest, logout, user } = useAuth();
   const { productId } = route.params;
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -177,14 +178,20 @@ function ProductDetailScreen({ route, navigation }) {
             Rs. {product.price}
           </Text>
         </View>
-        <AppButton
-          title="Add to Cart"
-          onPress={handleAddToCart}
-          loading={addingToCart}
-          disabled={product.stock === 0}
-          size="md"
-          style={{ paddingHorizontal: 32 }}
-        />
+        {user?.role === "vendor" ? (
+          <View style={[styles.vendorNotice, { backgroundColor: theme.primaryLight + "10" }]}>
+            <Text style={{ color: theme.textSecondary, fontSize: 12 }}>Shopping is restricted for Vendors</Text>
+          </View>
+        ) : (
+          <AppButton
+            title="Add to Cart"
+            onPress={handleAddToCart}
+            loading={addingToCart}
+            disabled={product.stock === 0}
+            size="md"
+            style={{ paddingHorizontal: 32 }}
+          />
+        )}
       </View>
     </View>
   );
@@ -238,6 +245,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   footerPrice: { fontSize: fonts.sizes.xl, fontWeight: fonts.weights.bold },
+  vendorNotice: { paddingVertical: 10, paddingHorizontal: 16, borderRadius: 12, alignItems: 'center' },
   errorText: { fontSize: fonts.sizes.lg },
 });
 

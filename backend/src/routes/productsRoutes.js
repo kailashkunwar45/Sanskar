@@ -24,7 +24,27 @@ const upsertValidation = [
   body("description").optional().trim().isLength({ min: 5 }),
   body("price").optional().isFloat({ min: 0 }),
   body("images").optional().isArray(),
-  body("category").optional().isIn(["pooja-item", "statue", "clothing", "book", "accessory", "other"]),
+  body("category").optional().custom(value => {
+    const allowed = ["pooja-item", "statue", "clothing", "book", "accessory", "other"];
+    if (Array.isArray(value)) {
+      return value.every(v => allowed.includes(v));
+    }
+    return allowed.includes(value);
+  }),
+  body("culturalCategory").optional().custom(value => {
+    const allowed = ["hindu", "buddhist"];
+    if (Array.isArray(value)) {
+      return value.every(v => allowed.includes(v));
+    }
+    return allowed.includes(value);
+  }),
+  body("ritualCategory").optional().custom(value => {
+    const allowed = ["festival", "daily", "ceremony", "wedding", "funeral", "other"];
+    if (Array.isArray(value)) {
+      return value.every(v => allowed.includes(v));
+    }
+    return allowed.includes(value);
+  }),
   body("stock").optional().isInt({ min: 0 }),
   body("vendor").optional().isMongoId(),
 ];

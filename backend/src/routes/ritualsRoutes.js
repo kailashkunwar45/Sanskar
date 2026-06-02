@@ -11,7 +11,7 @@ const protect = require("../middlewares/protect");
 const authorize = require("../middlewares/authorize");
 
 const router = express.Router();
-const adminOnly = [protect, authorize("admin")];
+const adminOnly = [protect, authorize("admin", "superadmin")];
 const idValidation = [param("id").isMongoId()];
 const upsertValidation = [
   body("title").optional().trim().isLength({ min: 2 }),

@@ -29,6 +29,7 @@ function authReducer(state, action) {
         accessToken: action.accessToken,
         refreshToken: action.refreshToken,
         isAuthenticated: !!action.accessToken,
+        isGuest: false,
         isLoading: false,
       };
     case "LOGIN":
@@ -38,6 +39,7 @@ function authReducer(state, action) {
         accessToken: action.accessToken,
         refreshToken: action.refreshToken,
         isAuthenticated: true,
+        isGuest: false,
         isLoading: false,
       };
     case "LOGOUT":

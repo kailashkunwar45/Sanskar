@@ -29,6 +29,9 @@ async function protect(req, _res, next) {
     req.user = user;
     return next();
   } catch (error) {
+    if (error.name === "TokenExpiredError" || error.name === "JsonWebTokenError") {
+      error.statusCode = 401;
+    }
     return next(error);
   }
 }

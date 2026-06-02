@@ -3,6 +3,7 @@ import {
   FlatList,
   Pressable,
   RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -12,7 +13,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 import { useAuth } from "../../contexts/AuthContext";
 import AppCard from "../../components/common/AppCard";
 import { ListSkeleton } from "../../components/common/SkeletonLoader";
-import { fetchArticles } from "../../services/api";
+import { fetchArticles, searchRituals } from "../../services/api";
 import fonts from "../../theme/fonts";
 
 const LIFECYCLE_FILTERS = [
@@ -23,6 +24,34 @@ const LIFECYCLE_FILTERS = [
   "death",
   "festival",
   "wellness",
+];
+
+const RITUAL_CATEGORIES = [
+  { key: "festival", label: "Festival", icon: "sparkles-outline" },
+  { key: "daily", label: "Daily", icon: "sunny-outline" },
+  { key: "ceremony", label: "Ceremony", icon: "ribbon-outline" },
+  { key: "wedding", label: "Wedding", icon: "heart-outline" },
+  { key: "funeral", label: "Funeral", icon: "flower-outline" },
+  { key: "other", label: "Other", icon: "ellipsis-horizontal-outline" },
+];
+
+const CULTURES = [
+  {
+    key: "hindu",
+    label: "Hindu Rituals",
+    subtitle: "सनातन धर्म",
+    icon: "flame-outline",
+    color: "#FF6B35",
+    gradientBg: "#FFF3EE",
+  },
+  {
+    key: "buddhist",
+    label: "Buddhist Rituals",
+    subtitle: "बौद्ध धर्म",
+    icon: "leaf-outline",
+    color: "#7B4EAB",
+    gradientBg: "#F5EEFF",
+  },
 ];
 
 function detectLifecycle(article) {
@@ -51,6 +80,11 @@ function ArticlesScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState("all");
 
+  // Ritual browser state
+  const [selectedCulture, setSelectedCulture] = useState(null); // 'hindu' | 'buddhist' | null
+  const [previewRituals, setPreviewRituals] = useState([]);
+  const [ritualsLoading, setRitualsLoading] = useState(false);
+
   const loadArticles = useCallback(async () => {
     try {
       const response = await fetchArticles(1, 200);
@@ -68,6 +102,21 @@ function ArticlesScreen({ navigation }) {
     loadArticles();
   }, [loadArticles]);
 
+  // Load preview rituals when culture is selected
+  useEffect(() => {
+    if (!selectedCulture) {
+      setPreviewRituals([]);
+      return;
+    }
+    setRitualsLoading(true);
+    searchRituals({ religion: selectedCulture, limit: 4 })
+      .then((res) => {
+        setPreviewRituals(res.rituals || res.data || []);
+      })
+      .catch(() => setPreviewRituals([]))
+      .finally(() => setRitualsLoading(false));
+  }, [selectedCulture]);
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     loadArticles();
@@ -78,7 +127,21 @@ function ArticlesScreen({ navigation }) {
     return allArticles.filter((a) => detectLifecycle(a) === filter);
   }, [allArticles, filter]);
 
-  const renderItem = useCallback(
+  const handleCultureSelect = useCallback((cultureKey) => {
+    setSelectedCulture((prev) => (prev === cultureKey ? null : cultureKey));
+  }, []);
+
+  const handleCategoryPress = useCallback(
+    (categoryKey) => {
+      navigation.navigate("Rituals", {
+        religion: selectedCulture,
+        category: categoryKey,
+      });
+    },
+    [navigation, selectedCulture]
+  );
+
+  const renderArticleItem = useCallback(
     ({ item }) => (
       <AppCard
         onPress={() => navigation.navigate("ArticleDetail", { articleId: item._id })}
@@ -117,15 +180,225 @@ function ArticlesScreen({ navigation }) {
     [navigation, theme]
   );
 
+  // ── Rituals Section ──────────────────────────────────────────────
+  const renderRitualsSection = useCallback(
+    () => (
+      <View style={styles.ritualSection}>
+        {/* Section Header */}
+        <View style={styles.sectionHeaderRow}>
+          <View>
+            <Text style={[styles.sectionTitle, { color: theme.textPrimary }]}>
+              🕉️ Explore Rituals
+            </Text>
+            <Text style={[styles.sectionSubtitle, { color: theme.textSecondary }]}>
+              Browse sacred practices by tradition
+            </Text>
+          </View>
+          <Pressable
+            onPress={() => navigation.navigate("Rituals")}
+            style={[styles.viewAllBtn, { borderColor: theme.primary }]}
+          >
+            <Text style={[styles.viewAllText, { color: theme.primary }]}>View All</Text>
+          </Pressable>
+        </View>
+
+        {/* Culture Cards */}
+        <View style={styles.cultureRow}>
+          {CULTURES.map((culture) => {
+            const isActive = selectedCulture === culture.key;
+            return (
+              <Pressable
+                key={culture.key}
+                onPress={() => handleCultureSelect(culture.key)}
+                style={[
+                  styles.cultureCard,
+                  {
+                    backgroundColor: isActive ? culture.color : theme.surface,
+                    borderColor: isActive ? culture.color : theme.border,
+                    shadowColor: isActive ? culture.color : "transparent",
+                  },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.cultureIconWrap,
+                    {
+                      backgroundColor: isActive
+                        ? "rgba(255,255,255,0.25)"
+                        : culture.gradientBg,
+                    },
+                  ]}
+                >
+                  <Ionicons
+                    name={culture.icon}
+                    size={26}
+                    color={isActive ? "#fff" : culture.color}
+                  />
+                </View>
+                <Text
+                  style={[
+                    styles.cultureLabel,
+                    { color: isActive ? "#fff" : theme.textPrimary },
+                  ]}
+                >
+                  {culture.label}
+                </Text>
+                <Text
+                  style={[
+                    styles.cultureSubtitle,
+                    { color: isActive ? "rgba(255,255,255,0.8)" : theme.textMuted },
+                  ]}
+                >
+                  {culture.subtitle}
+                </Text>
+                <View
+                  style={[
+                    styles.cultureArrow,
+                    { backgroundColor: isActive ? "rgba(255,255,255,0.2)" : theme.primaryLight + "18" },
+                  ]}
+                >
+                  <Ionicons
+                    name={isActive ? "chevron-up" : "chevron-down"}
+                    size={14}
+                    color={isActive ? "#fff" : theme.primary}
+                  />
+                </View>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        {/* Category Grid — shown when culture selected */}
+        {selectedCulture && (
+          <View style={styles.categoryPanel}>
+            <Text style={[styles.categoryPanelTitle, { color: theme.textSecondary }]}>
+              {selectedCulture === "hindu" ? "🪔" : "🙏"} Select a ritual category
+            </Text>
+            <View style={styles.categoryGrid}>
+              {RITUAL_CATEGORIES.map((cat) => (
+                <Pressable
+                  key={cat.key}
+                  onPress={() => handleCategoryPress(cat.key)}
+                  style={[
+                    styles.categoryChip,
+                    {
+                      backgroundColor: theme.surface,
+                      borderColor: theme.border,
+                    },
+                  ]}
+                >
+                  <Ionicons name={cat.icon} size={18} color={theme.primary} />
+                  <Text
+                    style={[styles.categoryChipLabel, { color: theme.textPrimary }]}
+                  >
+                    {cat.label}
+                  </Text>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={14}
+                    color={theme.textMuted}
+                  />
+                </Pressable>
+              ))}
+            </View>
+
+            {/* Quick peek: top rituals for selected culture */}
+            {ritualsLoading ? (
+              <View style={{ paddingVertical: 12 }}>
+                <Text style={{ color: theme.textMuted, fontSize: 12, textAlign: "center" }}>
+                  Loading rituals...
+                </Text>
+              </View>
+            ) : previewRituals.length > 0 ? (
+              <View style={styles.previewList}>
+                <Text style={[styles.previewTitle, { color: theme.textSecondary }]}>
+                  Featured {selectedCulture === "hindu" ? "Hindu" : "Buddhist"} Rituals
+                </Text>
+                {previewRituals.map((ritual) => (
+                  <Pressable
+                    key={ritual._id}
+                    onPress={() =>
+                      navigation.navigate("RitualDetail", { ritualId: ritual._id })
+                    }
+                    style={[
+                      styles.previewItem,
+                      { backgroundColor: theme.surface, borderColor: theme.border },
+                    ]}
+                  >
+                    <View
+                      style={[
+                        styles.previewIcon,
+                        { backgroundColor: theme.primaryLight + "20" },
+                      ]}
+                    >
+                      <Ionicons
+                        name="flame-outline"
+                        size={18}
+                        color={theme.primary}
+                      />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text
+                        style={[styles.previewItemTitle, { color: theme.textPrimary }]}
+                        numberOfLines={1}
+                      >
+                        {ritual.title}
+                      </Text>
+                      <Text
+                        style={[styles.previewItemCat, { color: theme.textMuted }]}
+                        numberOfLines={1}
+                      >
+                        {ritual.category} • {ritual.religion}
+                      </Text>
+                    </View>
+                    <Ionicons
+                      name="chevron-forward"
+                      size={16}
+                      color={theme.textMuted}
+                    />
+                  </Pressable>
+                ))}
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate("Rituals", { religion: selectedCulture })
+                  }
+                  style={[
+                    styles.browseMoreBtn,
+                    { backgroundColor: theme.primaryLight + "18" },
+                  ]}
+                >
+                  <Text style={[styles.browseMoreText, { color: theme.primary }]}>
+                    Browse all {selectedCulture === "hindu" ? "Hindu" : "Buddhist"} rituals →
+                  </Text>
+                </Pressable>
+              </View>
+            ) : null}
+          </View>
+        )}
+      </View>
+    ),
+    [
+      selectedCulture,
+      handleCultureSelect,
+      handleCategoryPress,
+      theme,
+      navigation,
+      previewRituals,
+      ritualsLoading,
+    ]
+  );
+
   const renderHeader = useCallback(
     () => (
       <View style={styles.headerWrap}>
         <Text style={[styles.headerTitle, { color: theme.textPrimary }]}>
-          Articles & Knowledge
+          Articles &amp; Knowledge
         </Text>
         <Text style={[styles.headerSubtitle, { color: theme.textSecondary }]}>
           Curated guidance for {user?.religionPreference || "your"} spiritual journey
         </Text>
+
+        {/* Lifecycle Filter Row */}
         <FlatList
           data={LIFECYCLE_FILTERS}
           horizontal
@@ -156,9 +429,19 @@ function ArticlesScreen({ navigation }) {
             </Pressable>
           )}
         />
+
+        {/* Rituals Explorer Section */}
+        {renderRitualsSection()}
+
+        {/* Articles section divider */}
+        <View style={[styles.divider, { borderColor: theme.border }]}>
+          <Text style={[styles.dividerLabel, { color: theme.textSecondary }]}>
+            📖 Articles
+          </Text>
+        </View>
       </View>
     ),
-    [filter, theme, user?.religionPreference]
+    [filter, theme, user?.religionPreference, renderRitualsSection]
   );
 
   if (loading && allArticles.length === 0) {
@@ -175,13 +458,15 @@ function ArticlesScreen({ navigation }) {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={styles.listContent}
       data={visibleArticles}
-      renderItem={renderItem}
+      renderItem={renderArticleItem}
       keyExtractor={(item, index) => item._id || String(index)}
       ListHeaderComponent={renderHeader}
       ListEmptyComponent={
-        <Text style={[styles.emptyText, { color: theme.textMuted }]}>
-          No articles available for this category
-        </Text>
+        <View style={{ alignItems: "center", paddingVertical: 40 }}>
+          <Text style={[styles.emptyText, { color: theme.textMuted, marginBottom: 12 }]}>
+            No articles available for this category
+          </Text>
+        </View>
       }
       refreshControl={
         <RefreshControl
@@ -219,6 +504,164 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 7,
   },
+
+  // ── Ritual Section ──
+  ritualSection: { marginTop: 20 },
+  sectionHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 14,
+  },
+  sectionTitle: {
+    fontSize: fonts.sizes.lg,
+    fontWeight: fonts.weights.bold,
+  },
+  sectionSubtitle: {
+    fontSize: fonts.sizes.xs,
+    marginTop: 2,
+  },
+  viewAllBtn: {
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+  },
+  viewAllText: {
+    fontSize: fonts.sizes.sm,
+    fontWeight: fonts.weights.medium,
+  },
+
+  // Culture cards
+  cultureRow: { flexDirection: "row", gap: 12 },
+  cultureCard: {
+    flex: 1,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    paddingVertical: 18,
+    paddingHorizontal: 14,
+    alignItems: "center",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  cultureIconWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 10,
+  },
+  cultureLabel: {
+    fontSize: fonts.sizes.sm,
+    fontWeight: fonts.weights.semibold,
+    textAlign: "center",
+    marginBottom: 2,
+  },
+  cultureSubtitle: {
+    fontSize: fonts.sizes.xs,
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  cultureArrow: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  // Category grid
+  categoryPanel: { marginTop: 14 },
+  categoryPanelTitle: {
+    fontSize: fonts.sizes.xs,
+    fontWeight: fonts.weights.semibold,
+    marginBottom: 10,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  categoryGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  categoryChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    minWidth: "45%",
+    flex: 1,
+  },
+  categoryChipLabel: {
+    flex: 1,
+    fontSize: fonts.sizes.sm,
+    fontWeight: fonts.weights.medium,
+  },
+
+  // Preview rituals
+  previewList: { marginTop: 14 },
+  previewTitle: {
+    fontSize: fonts.sizes.xs,
+    fontWeight: fonts.weights.semibold,
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
+    marginBottom: 8,
+  },
+  previewItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 10,
+    marginBottom: 6,
+  },
+  previewIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  previewItemTitle: {
+    fontSize: fonts.sizes.sm,
+    fontWeight: fonts.weights.semibold,
+  },
+  previewItemCat: {
+    fontSize: fonts.sizes.xs,
+    textTransform: "capitalize",
+    marginTop: 1,
+  },
+  browseMoreBtn: {
+    borderRadius: 10,
+    padding: 10,
+    alignItems: "center",
+    marginTop: 6,
+  },
+  browseMoreText: {
+    fontSize: fonts.sizes.sm,
+    fontWeight: fonts.weights.semibold,
+  },
+
+  // Divider
+  divider: {
+    borderTopWidth: 1,
+    marginTop: 20,
+    marginBottom: 14,
+    paddingTop: 14,
+  },
+  dividerLabel: {
+    fontSize: fonts.sizes.sm,
+    fontWeight: fonts.weights.semibold,
+  },
+
+  // Article list items
   articleRow: { alignItems: "center", flexDirection: "row" },
   articleIcon: {
     alignItems: "center",
@@ -250,4 +693,3 @@ const styles = StyleSheet.create({
 });
 
 export default memo(ArticlesScreen);
-

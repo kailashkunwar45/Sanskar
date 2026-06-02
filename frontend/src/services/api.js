@@ -1,9 +1,11 @@
 import { httpRequest } from "./http/client";
 
 // ── Products ──
-export function fetchProducts(page = 1, limit = 10, category) {
+export function fetchProducts(page = 1, limit = 10, category, culturalCategory, ritualCategory) {
   let url = `/api/products?page=${page}&limit=${limit}`;
-  if (category) url += `&category=${category}`;
+  if (category) url += `&category=${encodeURIComponent(category)}`;
+  if (culturalCategory) url += `&culturalCategory=${encodeURIComponent(culturalCategory)}`;
+  if (ritualCategory) url += `&ritualCategory=${encodeURIComponent(ritualCategory)}`;
   return httpRequest(url);
 }
 export function fetchProductById(id) {
@@ -31,6 +33,23 @@ export function searchRituals({ search, category, religion, page = 1, limit = 10
 }
 export function fetchRitualById(id) {
   return httpRequest(`/api/rituals/${id}`);
+}
+export function createRitual(ritualData) {
+  return httpRequest("/api/rituals", {
+    method: "POST",
+    body: ritualData,
+  });
+}
+export function updateRitual(id, ritualData) {
+  return httpRequest(`/api/rituals/${id}`, {
+    method: "PUT",
+    body: ritualData,
+  });
+}
+export function deleteRitual(id) {
+  return httpRequest(`/api/rituals/${id}`, {
+    method: "DELETE",
+  });
 }
 
 // ── Cart ──
@@ -88,8 +107,14 @@ export function fetchProviders() {
 export function fetchPendingProviders() {
   return httpRequest("/api/users/pending");
 }
+export function fetchUserSummary() {
+  return httpRequest("/api/users/summary");
+}
 export function verifyProvider(providerId) {
   return httpRequest(`/api/users/${providerId}/verify`, { method: "PUT" });
+}
+export function declineProvider(providerId) {
+  return httpRequest(`/api/users/${providerId}/decline`, { method: "DELETE" });
 }
 
 // ── Reviews ──
@@ -163,15 +188,19 @@ export function verifyKhaltiPayment(data) {
 }
 
 // ── Media / Admin ──
-export function uploadMedia(imageUri) {
+export function uploadMedia(fileOrUri) {
   const formData = new FormData();
   
-  // React Native fetch implementation needs 'name', 'type', and 'uri' for files
-  const filename = imageUri.split('/').pop();
-  const match = /\.(\w+)$/.exec(filename);
-  const type = match ? `image/${match[1]}` : `image/jpeg`;
-
-  formData.append('image', { uri: imageUri, name: filename, type });
+  if (typeof fileOrUri === "string") {
+    // React Native fetch implementation needs 'name', 'type', and 'uri' for files
+    const filename = fileOrUri.split('/').pop();
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `image/${match[1]}` : `image/jpeg`;
+    formData.append('image', { uri: fileOrUri, name: filename, type });
+  } else {
+    // Web File object
+    formData.append('image', fileOrUri);
+  }
 
   return httpRequest("/api/media/upload", {
     method: "POST",
@@ -179,5 +208,62 @@ export function uploadMedia(imageUri) {
     headers: {
       "Content-Type": "multipart/form-data",
     },
+  });
+}
+
+// ── CRUD: Articles ──
+export function createArticle(articleData) {
+  return httpRequest("/api/articles", {
+    method: "POST",
+    body: articleData,
+  });
+}
+export function updateArticle(id, articleData) {
+  return httpRequest(`/api/articles/${id}`, {
+    method: "PUT",
+    body: articleData,
+  });
+}
+export function deleteArticle(id) {
+  return httpRequest(`/api/articles/${id}`, {
+    method: "DELETE",
+  });
+}
+
+// ── CRUD: Products ──
+export function createProduct(productData) {
+  return httpRequest("/api/products", {
+    method: "POST",
+    body: productData,
+  });
+}
+export function updateProduct(id, productData) {
+  return httpRequest(`/api/products/${id}`, {
+    method: "PUT",
+    body: productData,
+  });
+}
+export function deleteProduct(id) {
+  return httpRequest(`/api/products/${id}`, {
+    method: "DELETE",
+  });
+}
+
+// ── CRUD: Festivals ──
+export function createFestival(festivalData) {
+  return httpRequest("/api/festivals", {
+    method: "POST",
+    body: festivalData,
+  });
+}
+export function updateFestival(id, festivalData) {
+  return httpRequest(`/api/festivals/${id}`, {
+    method: "PUT",
+    body: festivalData,
+  });
+}
+export function deleteFestival(id) {
+  return httpRequest(`/api/festivals/${id}`, {
+    method: "DELETE",
   });
 }

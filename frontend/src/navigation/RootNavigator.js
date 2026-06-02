@@ -6,7 +6,12 @@ import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { useTheme } from "../contexts/ThemeContext";
 
 const linking = {
-  prefixes: ["http://localhost:5173", "sanskar://"],
+  prefixes: [
+    "http://localhost:8081",
+    "http://localhost:19006",
+    "http://localhost:5173",
+    "sanskar://",
+  ],
   config: {
     screens: {
       Onboarding: "onboarding",
@@ -18,8 +23,9 @@ const linking = {
           Home: "",
           Articles: "articles",
           ArticleDetail: "articles/:id",
-          Calendar: "calendar",
+          Calendar: "calendar-stack",
           Chat: "chat",
+          EventDetail: "event/:id",
         },
       },
       ProductsTab: {
@@ -27,6 +33,13 @@ const linking = {
         screens: {
           Products: "",
           ProductDetail: ":id",
+        },
+      },
+      CalendarTab: {
+        path: "calendar",
+        screens: {
+          CalendarMain: "",
+          EventDetail: "event/:id",
         },
       },
       RitualsTab: {
@@ -48,8 +61,16 @@ const linking = {
         path: "profile",
         screens: {
           Profile: "",
-          AdminDashboard: "admin",
-          PanditDashboard: "pandit",
+        },
+      },
+      AdminTab: {
+        path: "admin",
+        screens: {
+          AdminDashboard: "",
+          ArticleDetail: "articles/:id",
+          ProductDetail: "products/:id",
+          RitualDetail: "rituals/:id",
+          EventDetail: "event/:id",
         },
       },
     },

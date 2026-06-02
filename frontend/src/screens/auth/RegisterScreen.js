@@ -136,7 +136,7 @@ function RegisterScreen({ navigation }) {
         {/* Role Selection */}
         <Text style={[styles.label, { color: theme.textSecondary, marginTop: 10 }]}>Account Type</Text>
         <View style={styles.toggleRow}>
-          {["customer", "pandit", "lama"].map((r) => (
+          {["customer", "pandit", "lama", "vendor"].map((r) => (
             <Pressable
               key={r}
               style={[
@@ -152,7 +152,7 @@ function RegisterScreen({ navigation }) {
                 style={{
                   color: role === r ? theme.textOnPrimary : theme.textSecondary,
                   fontWeight: fonts.weights.semibold,
-                  fontSize: fonts.sizes.sm,
+                  fontSize: 10,
                   textTransform: "capitalize",
                 }}
               >
@@ -162,11 +162,11 @@ function RegisterScreen({ navigation }) {
           ))}
         </View>
         
-        {(role === "pandit" || role === "lama") && (
+        {["pandit", "lama", "vendor"].includes(role) && (
           <View style={[styles.infoBox, { backgroundColor: theme.info + "20" }]}>
             <Ionicons name="information-circle" size={16} color={theme.info} />
             <Text style={[styles.infoText, { color: theme.info }]}>
-              {role === "pandit" ? "Pandit" : "Lama"} accounts require manual verification by an Admin before taking bookings.
+              {role.charAt(0).toUpperCase() + role.slice(1)} accounts require manual verification by an Admin before full access.
             </Text>
           </View>
         )}

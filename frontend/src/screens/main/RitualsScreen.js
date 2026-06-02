@@ -32,7 +32,7 @@ const RELIGIONS = [
   { key: "buddhist", label: "Buddhist" },
 ];
 
-function RitualsScreen({ navigation }) {
+function RitualsScreen({ navigation, route }) {
   const { theme } = useTheme();
   const [rituals, setRituals] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,10 +40,10 @@ function RitualsScreen({ navigation }) {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  // Filters
+  // Filters — initialise from route params if provided
   const [searchText, setSearchText] = useState("");
-  const [activeCategory, setActiveCategory] = useState(null);
-  const [activeReligion, setActiveReligion] = useState(null);
+  const [activeCategory, setActiveCategory] = useState(route?.params?.category || null);
+  const [activeReligion, setActiveReligion] = useState(route?.params?.religion || null);
   const searchTimeout = useRef(null);
 
   const loadRituals = useCallback(

@@ -10,13 +10,17 @@ import {
   View,
 } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTheme } from "../../contexts/ThemeContext";
 import fonts from "../../theme/fonts";
 import { Ionicons } from "@expo/vector-icons";
 import { fetchBookings, fetchProviders, createBooking } from "../../services/api";
+import AppCard from "../../components/common/AppCard";
+import AppButton from "../../components/common/AppButton";
+import { ListSkeleton } from "../../components/common/SkeletonLoader";
 
 function BookingScreen({ navigation }) {
   const { theme } = useTheme();
-  const { isGuest, logout } = useAuth();
+  const { isGuest, logout, user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -215,24 +219,31 @@ function BookingScreen({ navigation }) {
                   No verified providers available right now.
                 </Text>
               }
-              renderItem={({ item }) => (
-                <View style={[styles.providerCard, { backgroundColor: theme.surface, borderColor: theme.borderLight }]}>
-                  <View style={styles.providerInfo}>
-                    <Text style={[styles.providerName, { color: theme.textPrimary }]}>{item.name}</Text>
-                    <Text style={[styles.providerRole, { color: theme.textSecondary }]}>
-                      {item.role} • {item.religionPreference}
-                    </Text>
-                    {item.specialization ? (
-                      <Text style={[styles.providerSpec, { color: theme.textMuted }]}>{item.specialization}</Text>
-                    ) : null}
+              renderItem={({ item }) => {
+                const isSameCategory = user?.role === item.role;
+                return (
+                  <View style={[styles.providerCard, { backgroundColor: theme.surface, borderColor: theme.borderLight, opacity: isSameCategory ? 0.6 : 1 }]}>
+                    <View style={styles.providerInfo}>
+                      <Text style={[styles.providerName, { color: theme.textPrimary }]}>{item.name}</Text>
+                      <Text style={[styles.providerRole, { color: theme.textSecondary }]}>
+                        {item.role} • {item.religionPreference}
+                      </Text>
+                      {isSameCategory && (
+                        <Text style={{ color: theme.danger, fontSize: 10, marginTop: 2 }}>You cannot book another {item.role}</Text>
+                      )}
+                      {item.specialization ? (
+                        <Text style={[styles.providerSpec, { color: theme.textMuted }]}>{item.specialization}</Text>
+                      ) : null}
+                    </View>
+                    <AppButton 
+                      title={isSameCategory ? "Restricted" : "Book"} 
+                      size="sm" 
+                      disabled={isSameCategory}
+                      onPress={() => submitBooking(item._id)} 
+                    />
                   </View>
-                  <AppButton 
-                    title="Book" 
-                    size="sm" 
-                    onPress={() => submitBooking(item._id)} 
-                  />
-                </View>
-              )}
+                );
+              }}
             />
           )}
         </View>
